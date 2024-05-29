@@ -10,7 +10,6 @@ export const register = async (req, res) => {
   try {
     // HASH THE PASSWORD
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("hashedPassword", hashedPassword);
 
     // CREATE A NEW USER AND SAVE TO DB
     const newUser = await prisma.user.create({
@@ -21,15 +20,12 @@ export const register = async (req, res) => {
       },
     });
 
-    console.log(newUser);
-
     res.status(201).json({ message: "User created successfully" });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Failed to create user!" });
   }
 
-  console.log("body", req.body);
 };
 
 export const login = async (req, res) => {
@@ -60,7 +56,8 @@ export const login = async (req, res) => {
 			process.env.JWT_SECRET_KEY,
 			{ expiresIn: age }
 		);
-
+		console.log({ user });
+		const {password: userPassword, ...userInfo} = user
 
     // res.setHeader("set-Cookie", "test=" + "myValue").json("success")
     res
@@ -71,7 +68,8 @@ export const login = async (req, res) => {
         maxAge: age,
       })
       .status(200)
-      .json({ message: "Login Successful" });
+      // SEND USER INFORMATION
+      .json(userInfo);
 
   } catch (err) {
     console.log(err);
