@@ -21,6 +21,7 @@ function ProfilePage() {
     }
   };
   return (
+    currentUser && 
     <div className='profilePage'>
       <div className='details'>
         <div className='wrapper'>
