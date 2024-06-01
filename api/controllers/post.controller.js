@@ -11,7 +11,7 @@ export const getPosts = async (req, res) => {
     // }, 3000);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Failed to get posts" });
+    res.status(500).json({ message: "Failed to get posts kk" });
   }
 };
 
@@ -20,15 +20,15 @@ export const getPost = async (req, res) => {
   try {
     const post = await prisma.post.findUnique({
       where: { id },
-      // include: {
-      //   postDetail: true,
-      //   user: {
-      //     select: {
-      //       username: true,
-      //       avatar: true,
-      //     },
-      //   },
-      // },
+      include: {
+        postDetail: true,
+        user: {
+          select: {
+            username: true,
+            avatar: true,
+          },
+        },
+      },
     });
 
     // const token = req.cookies?.token;
@@ -62,25 +62,18 @@ export const addPost = async (req, res) => {
   console.log("Request body:", body);
 
   // Validate that the required fields are present
-  if (!body.title) {
-    return res.status(400).json({ message: "Title is required" });
-  }
+  // if (!body.title) {
+  //   return res.status(400).json({ message: "Title is required" });
+  // }
 
   try {
     const newPost = await prisma.post.create({
       data: {
-        title: body.title,
-        price: body.price,
-        img: Array.isArray(body.img) ? body.img : [body.img], // Ensure img is an array
-        address: body.address,
-        city: body.city,
-        bedroom: body.bedroom,
-        bathroom: body.bathroom,
-        type: body.type,
-        property: body.property,
-        latitude: body.latitude,
-        longitude: body.longitude,
+        ...body.postData,
         userId: tokenUserId,
+        postDetail: {
+          create: body.postDetail,
+        },
       },
     });
     res.status(201).json(newPost);
